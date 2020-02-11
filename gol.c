@@ -3,11 +3,12 @@
 #include"gol.h"
 
 void read_in_file(FILE *infile, struct universe *u){
-    u.grid = malloc()
-    char line[512];
-    while (fgets(line, 512, infile) != NULL){
-        
-    }
+    u->grid = malloc(1);
+	int lines = 1;
+	int lengthOfFirstLine = 0;
+	char charBuffer;
+	while (
+
 }
 
 void write_out_file(FILE *outfile, struct universe *u){
