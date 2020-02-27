@@ -1,7 +1,7 @@
 struct universe {
     int width;
     int height;
-    int **grid;        
+    char **grid;        
 };
 
 /*Do not modify the next seven lines*/
