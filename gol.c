@@ -1,18 +1,19 @@
 #include<stdlib.h>
 #include<stdio.h>
-#include<string.h>
 #include<stdbool.h>
 #include"gol.h"
 
 void read_in_file(FILE *infile, struct universe *u){
     u->width = -1;
     u->height = 0;
-    u->grid = malloc(u->height * sizeof(int*));
+    u->grid = malloc(u->height * 512 * sizeof(char));
     char line[512] = "";
     while (fgets(line, 512, infile) != NULL){
         u->height++;
-        u->grid = realloc(u->grid, u->height * sizeof(int));
+        u->grid = realloc(u->grid, u->height * 512 * sizeof(char));
         u->grid[u->height-1] = line;
+        if (u->width == -1){
+            u->width = sizeof(u->grid[0]);
         }
     }
 }
