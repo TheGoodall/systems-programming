@@ -76,7 +76,6 @@ int will_be_alive(struct universe *u, int column, int row){
     int row_1 = 1;
     int row_3 = 1;
 
-    int alive = 0;
 
     if (one_left == -1){
         column_1 = 0;
@@ -143,7 +142,17 @@ int will_be_alive(struct universe *u, int column, int row){
         }
     }
 
-    if (count < 2) {alive = 0;} else if (count <= 3) {alive = 1;} else {alive = 0;}
+    int alive = 0;
+    
+    
+    if (is_alive(u, column, row)){
+            if (count < 2) {alive = 0;} else if (count <= 3) {alive = 1;} 
+    } else {
+        if (count == 3){
+            alive = 1;
+        }
+    }
+
 
     return alive;
 
@@ -155,7 +164,37 @@ int will_be_alive_torus(struct universe *u, int column, int row){
 }
 
 void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int row)){
-    
+    struct universe v;
+    v.height = u->height;
+    v.width = u->width;
+    v.grid = calloc(v.height, sizeof(char *));
+    if (v.grid == NULL){
+        perror("Failed to allocate Memory");
+        exit(1);
+    }
+    for (int i=0; i<v.height; i++){
+        v.grid[i] = calloc(v.width, sizeof(char));
+        if (v.grid[i] == NULL){
+            perror("Failed to allocate Memory");
+            exit(1);
+        }
+        memcpy(v.grid[i], u->grid[i], v.width * sizeof(char));
+    }
+           
+    for (int i = 0; i<u->height; i++){
+        for (int j = 0; j< u->width; j++){
+            if (rule(u, j, i)){
+                v.grid[i][j] = '*';
+            } else {
+                v.grid[i][j] = '.';
+            }        
+        }
+    }  
+    for (int i = 0; i<v.height; i++){
+        memcpy(u->grid[i], v.grid[i], v.width*sizeof(char));
+        free(v.grid[i]);
+    }
+    free(v.grid);
     
 }
 
