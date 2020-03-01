@@ -2,34 +2,57 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include"gol.h"
+#include<string.h>
 
 void read_in_file(FILE *infile, struct universe *u){
     u->width = -1;
     u->height = 0;
-    u->grid = malloc(u->height * 512 * sizeof(char));
-    char line[512] = "";
-    while (fgets(line, 512, infile) != NULL){
+    u->grid = calloc(u->height, sizeof(char *));
+    char line[512] = "\0";
+    int linelength;
+    char c[2];
+    c[1] = '\0';
+
+    while (1){
+        linelength = 0;
+        strcpy(line,  "\0");
+        c[0] = fgetc(infile);
+        
+        do {
+            strcat(line, &c[0]);
+            linelength++;
+            c[0] = fgetc(infile);
+        } while (c[0] != '\n' && linelength <= 500 && c[0] != EOF);
+        
+        if (c[0] == EOF){
+            break;
+        }
+        
+
         if (u->width == -1){
-            u->width = sizeof(line);
+            u->width = linelength;
         } else {
-            if (sizeof(line)!= u->width){
+            if (linelength!= u->width){
                 return;
             }
         }
         u->height++;
-        u->grid = realloc(u->grid, u->height * 512 * sizeof(char));
-        u->grid[u->height-1] = line;
+        u->grid = realloc(u->grid, u->height * sizeof(char *));
+        u->grid[u->height-1] = calloc(u->width, sizeof(char));
+        for (int i = 0; i< u->width; i++){
+            u->grid[u->height-1][i] = line[i];
+        }
+
 
     }
 
 }
 void write_out_file(FILE *outfile, struct universe *u){
+    printf("\n\nStarting Output\n\n");
     for (int i = 0; i < u->height; i++){
-        for (int j = 0; j < u->width; j++){
-            printf("%c", u->grid[i][j]);
-        }
-        printf("%c",'\n');
+        printf("%s\n", u->grid[i]);
     }
+    printf("\n\nEnd of Output\n\n");
 }
 
 int is_alive(struct universe *u, int column, int row){
