@@ -48,11 +48,9 @@ void read_in_file(FILE *infile, struct universe *u){
 
 }
 void write_out_file(FILE *outfile, struct universe *u){
-    printf("\n\nStarting Output\n\n");
     for (int i = 0; i < u->height; i++){
         printf("%s\n", u->grid[i]);
     }
-    printf("\n\nEnd of Output\n\n");
 }
 
 int is_alive(struct universe *u, int column, int row){
