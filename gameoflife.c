@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
     }
     write_out_file(outfile,&v);
     if (printStats){
-        printf("Printing stats!");
+        print_statistics(&v);
     }
     return 0;
 }

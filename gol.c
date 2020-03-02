@@ -8,6 +8,8 @@ void read_in_file(FILE *infile, struct universe *u){
     u->width = -1;
     u->height = 0;
     u->grid = calloc(u->height, sizeof(char *));
+    u->generations = 0;
+    u->average = 0;
     char line[512] = "\0";
     int linelength;
     char c[2];
@@ -40,7 +42,11 @@ void read_in_file(FILE *infile, struct universe *u){
         u->grid = realloc(u->grid, u->height * sizeof(char *));
         u->grid[u->height-1] = calloc(u->width, sizeof(char));
         for (int i = 0; i< u->width; i++){
+            if (line[i] == '*'){
+                u->average++;
+            }
             u->grid[u->height-1][i] = line[i];
+            
         }
 
 
@@ -49,7 +55,10 @@ void read_in_file(FILE *infile, struct universe *u){
 }
 void write_out_file(FILE *outfile, struct universe *u){
     for (int i = 0; i < u->height; i++){
-        printf("%s\n", u->grid[i]);
+        for (int j = 0; j<u->width; j++){
+            putc(u->grid[i][j], outfile);
+        }
+        putc('\n', outfile);
     }
 }
 
@@ -158,11 +167,56 @@ int will_be_alive(struct universe *u, int column, int row){
 
 int will_be_alive_torus(struct universe *u, int column, int row){
 
+    int one_left = column - 1;
+    int one_right = column + 1;
+    int one_up = row - 1;
+    int one_down = row + 1;
+ 
+    if (one_left < 0){
+        one_left = u->width-1;
+    }
+    if (one_right > u->width-1){
+        one_right = 0;
+    }
+    if (one_up < 0){
+        one_up = u->height-1;
+    }
+    if (one_down > u->height-1){
+        one_down = 0;
+    }
+
+    int count = 0;
+
+    if (is_alive(u, one_left,  one_up)){count += 1;}
+    if (is_alive(u, column,    one_up)){count += 1;}
+    if (is_alive(u, one_right, one_up)){count += 1;}
+    if (is_alive(u, one_left,  row)){count += 1;}
+    if (is_alive(u, one_right, row)){count += 1;}
+    if (is_alive(u, one_left,  one_down)){count += 1;}
+    if (is_alive(u, column,    one_down)){count += 1;}
+    if (is_alive(u, one_right, one_down)){count += 1;}
+
+    int alive = 0;
+    
+    
+    if (is_alive(u, column, row)){
+            if (count < 2) {alive = 0;} else if (count <= 3) {alive = 1;} 
+    } else {
+        if (count == 3){
+            alive = 1;
+        }
+    }
+
+
+    return alive;
 
 }
 
+
+
 void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int row)){
     struct universe v;
+    int alivecount = 0;
     v.height = u->height;
     v.width = u->width;
     v.grid = calloc(v.height, sizeof(char *));
@@ -183,11 +237,15 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
         for (int j = 0; j< u->width; j++){
             if (rule(u, j, i)){
                 v.grid[i][j] = '*';
+                alivecount ++;
             } else {
                 v.grid[i][j] = '.';
             }        
         }
-    }  
+    } 
+    u->average = ((u->average * u->generations) + alivecount)/(u->generations+1);
+    u->generations ++;
+    u->alivecount = alivecount;
     for (int i = 0; i<v.height; i++){
         memcpy(u->grid[i], v.grid[i], v.width*sizeof(char));
         free(v.grid[i]);
@@ -197,7 +255,9 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
 }
 
 void print_statistics(struct universe *u){
-
-
+    double size = u->height * u->width;
+    double alivepercent = (double)u->alivecount/size;
+    double averagepercent = (double)u->average/size;
+    printf("%3.3f%% of cells currently alive\n%3.3f%% of cells alive on average", alivepercent, averagepercent);
 }
 

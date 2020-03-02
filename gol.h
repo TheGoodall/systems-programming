@@ -2,6 +2,9 @@ struct universe {
     int width;
     int height;
     char **grid;        
+    int generations;
+    double average;
+    int alivecount;
 };
 
 /*Do not modify the next seven lines*/
