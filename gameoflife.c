@@ -5,9 +5,9 @@
 int main(int argc, char *argv[]){
   
     FILE *infile = stdin;  
-    char* infilename = NULL;
+    char* infilename = "\0";
     FILE *outfile = stdout;
-    char* outfilename = NULL;
+    char* outfilename = "\0";
 
     int generations = 5;
 
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
     }
     int rw = 0;
     if (infilename){
-        if (strcmp(infilename, outfilename)){
+        if ((int)strcmp(infilename, outfilename) == 0){
             rw = 1;
             infile = fopen(infilename, "r+");
             outfile = infile;
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]){
             infile = fopen(infilename, "r");
         }
     }
-    if (outfilename && rw){
+    if (outfilename && !rw){
         outfile = fopen(outfilename, "w");
     }
     
