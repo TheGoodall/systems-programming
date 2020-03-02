@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
         }
     }
     int rw = 0;
-    if (infilename){
+    if (strcmp(infilename, "") != 0){
         if ((int)strcmp(infilename, outfilename) == 0){
             rw = 1;
             infile = fopen(infilename, "r+");
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]){
             infile = fopen(infilename, "r");
         }
     }
-    if (outfilename && !rw){
+    if (!strcmp(outfilename, "") == 0 && !rw){
         outfile = fopen(outfilename, "w");
     }
     
