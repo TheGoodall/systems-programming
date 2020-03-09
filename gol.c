@@ -8,9 +8,13 @@ void read_in_file(FILE *infile, struct universe *u){
     u->width = -1;
     u->height = 0;
     u->grid = calloc(u->height, sizeof(char *));
+    if (u->grid == NULL){
+	    perror("Could not allocate memory");
+	    exit(1);
+    }
     u->generations = 0;
     u->average = 0;
-    char line[512] = "\0";
+    char line[514] = "\0";
     int linelength;
     char c[2];
     c[1] = '\0';
@@ -24,7 +28,7 @@ void read_in_file(FILE *infile, struct universe *u){
             strcat(line, &c[0]);
             linelength++;
             c[0] = fgetc(infile);
-        } while (c[0] != '\n' && linelength <= 500 && c[0] != EOF);
+        } while (c[0] != '\n' && linelength <= 512 && c[0] != EOF);
         
         if (c[0] == EOF){
             break;
@@ -40,7 +44,15 @@ void read_in_file(FILE *infile, struct universe *u){
         }
         u->height++;
         u->grid = realloc(u->grid, u->height * sizeof(char *));
+	if(u->grid == NULL){
+		perror("Could not allocate memory");
+		exit(1);
+	}
         u->grid[u->height-1] = calloc(u->width, sizeof(char));
+	if (u->grid[u->height-1] == NULL){
+		perror("Could not allocate memory");
+		exit(1);
+	}
         for (int i = 0; i< u->width; i++){
             if (line[i] == '*'){
                 u->average++;

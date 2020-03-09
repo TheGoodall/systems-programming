@@ -23,19 +23,19 @@ int main(int argc, char *argv[]){
                     i++;
                     if (i<=argc){
                         infilename = argv[i];
-                    } else {exit(1);}
+                    } else {perror("Error, incorrect arguments");exit(1);}
                     break;
                 case 'o':
                     i++;
                     if (i<=argc){
                         outfilename = argv[i];
-                    } else {exit(1);}
+                    } else {perror("Error, incorrect arguments");exit(1);}
                     break;
                 case 'g':
                     i++;
                     if (i<=argc){
                         generations = (int)atoi(argv[i]);
-                    } else {exit(1);}
+                    } else {perror("Error, incorrect arguments");exit(1);}
                     break;
                 case 's':
                     printStats = 1;
@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
                     torus = 1;
                     break;
                 default:
+		    perror("Error, incorrect arguments");
                     exit(1);
                     break;
             }
@@ -57,12 +58,24 @@ int main(int argc, char *argv[]){
             rw = 1;
             infile = fopen(infilename, "r+");
             outfile = infile;
+	    if (infile == NULL){
+		    perror("Error, could not open file");
+		    exit(1);
+	    }
         } else {
             infile = fopen(infilename, "r");
+	    if (infile == NULL){
+		    perror("Error, could not open file");
+		    exit(1);
+	    }
         }
     }
     if (!strcmp(outfilename, "") == 0 && !rw){
         outfile = fopen(outfilename, "w");
+	if (outfile == NULL){
+	    perror("Error, could not open file");
+	    exit(1);
+	}
     }
     
     struct universe v;
@@ -81,5 +94,9 @@ int main(int argc, char *argv[]){
     if (printStats){
         print_statistics(&v);
     }
+    if (infile != outfile){
+	fclose(outfile);
+    }
+    fclose(infile);
     return 0;
 }
